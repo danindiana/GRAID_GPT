@@ -1,0 +1,112 @@
+{
+  "profile_name": "NVMe PCIe 3.0 Balanced",
+  "drive_type": "nvme",
+  "interface": "pcie_3.0",
+  "description": "Optimized for mainstream NVMe SSDs on PCIe 3.0 (Samsung 970 EVO, WD Blue SN570, etc.)",
+
+  "drive_characteristics": {
+    "sequential_read_mbs": 3500,
+    "sequential_write_mbs": 3000,
+    "random_read_iops": 500000,
+    "random_write_iops": 480000,
+    "queue_depth": 128,
+    "block_size_kb": 4,
+    "interface_bandwidth_gbs": 4.0,
+    "latency_us": 15
+  },
+
+  "raid_configuration": {
+    "recommended_raid_level": 5,
+    "min_drives": 3,
+    "max_drives": 6,
+    "optimal_drives": 4,
+
+    "stripe_configuration": {
+      "stripe_size_kb": 128,
+      "chunk_size_kb": 64,
+      "alignment_kb": 4,
+      "reason": "Medium stripes balance latency and throughput for PCIe 3.0"
+    },
+
+    "gpu_raid_settings": {
+      "memory_pool_size_mb": 2048,
+      "num_streams": 2,
+      "block_size_kb": 256,
+      "batch_size_mb": 128,
+      "enable_async": true,
+      "prefetch_size_mb": 64
+    }
+  },
+
+  "io_scheduler": {
+    "scheduler": "none",
+    "reason": "NVMe still benefits from direct dispatch",
+    "queue_depth": 128,
+    "nr_requests": 512,
+    "read_ahead_kb": 128
+  },
+
+  "filesystem_recommendations": {
+    "xfs": {
+      "mount_options": "noatime,nodiratime,logbufs=8,logbsize=128k,largeio",
+      "stripe_unit_kb": 64,
+      "stripe_width": 4
+    },
+    "ext4": {
+      "mount_options": "noatime,nodiratime,data=ordered,barrier=1",
+      "stride": 16,
+      "stripe_width": 64
+    }
+  },
+
+  "performance_tuning": {
+    "vm_settings": {
+      "dirty_ratio": 30,
+      "dirty_background_ratio": 10,
+      "dirty_writeback_centisecs": 500,
+      "swappiness": 10
+    },
+
+    "nvme_specific": {
+      "write_cache": "enabled",
+      "poll_queues": 2,
+      "max_hw_sectors_kb": 512,
+      "io_timeout_ms": 30000
+    }
+  },
+
+  "expected_performance": {
+    "raid5": {
+      "encode_throughput_gbs": "12-18",
+      "decode_throughput_gbs": "10-15",
+      "rebuild_speed_gbs": "6-10",
+      "rebuild_time_8tb_hours": 1.5
+    },
+    "raid6": {
+      "encode_throughput_gbs": "10-14",
+      "decode_throughput_gbs": "8-12",
+      "rebuild_speed_gbs": "5-8",
+      "rebuild_time_8tb_hours": 2.0
+    }
+  },
+
+  "best_practices": [
+    "Good balance of performance and cost",
+    "Suitable for most workloads",
+    "Use RAID 5 for better performance, RAID 6 for reliability",
+    "128KB stripe size is optimal for mixed workloads",
+    "Monitor SMART attributes regularly",
+    "Plan for drive replacement every 3-5 years"
+  ],
+
+  "compatibility": {
+    "example_drives": [
+      "Samsung 970 EVO Plus",
+      "WD Blue SN570",
+      "Crucial P3 Plus",
+      "Kingston NV2",
+      "Intel 670p"
+    ],
+    "tested_with": ["RTX 3080", "RTX 3060", "Quadro RTX 4000"]
+  }
+}

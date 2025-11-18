@@ -1,0 +1,169 @@
+{
+  "profile_name": "HDD 7200 RPM Enterprise",
+  "drive_type": "hdd",
+  "interface": "sata3",
+  "description": "Optimized for 7200 RPM enterprise HDDs (WD Red, Seagate IronWolf, Toshiba N300, etc.)",
+
+  "drive_characteristics": {
+    "sequential_read_mbs": 180,
+    "sequential_write_mbs": 180,
+    "random_read_iops": 120,
+    "random_write_iops": 120,
+    "queue_depth": 32,
+    "block_size_kb": 4,
+    "interface_bandwidth_gbs": 0.6,
+    "rotational_latency_ms": 4.16,
+    "seek_time_ms": 8.5,
+    "cache_mb": 256
+  },
+
+  "raid_configuration": {
+    "recommended_raid_level": 6,
+    "min_drives": 4,
+    "max_drives": 12,
+    "optimal_drives": 8,
+
+    "stripe_configuration": {
+      "stripe_size_kb": 1024,
+      "chunk_size_kb": 256,
+      "alignment_kb": 4,
+      "reason": "Large stripes reduce seek overhead and leverage sequential performance"
+    },
+
+    "gpu_raid_settings": {
+      "memory_pool_size_mb": 2048,
+      "num_streams": 2,
+      "block_size_kb": 1024,
+      "batch_size_mb": 512,
+      "enable_async": true,
+      "prefetch_size_mb": 256
+    }
+  },
+
+  "io_scheduler": {
+    "scheduler": "mq-deadline",
+    "reason": "Deadline scheduler reduces seek time for rotational media",
+    "queue_depth": 32,
+    "nr_requests": 128,
+    "read_ahead_kb": 1024,
+    "rotational": 1,
+    "fifo_batch": 16,
+    "writes_starved": 4
+  },
+
+  "filesystem_recommendations": {
+    "xfs": {
+      "mount_options": "noatime,nodiratime,logbufs=8,logbsize=256k,largeio,inode64",
+      "stripe_unit_kb": 256,
+      "stripe_width": 8,
+      "agcount": 32
+    },
+    "ext4": {
+      "mount_options": "noatime,nodiratime,data=ordered,commit=60",
+      "stride": 64,
+      "stripe_width": 512,
+      "inode_ratio": 16384
+    }
+  },
+
+  "performance_tuning": {
+    "vm_settings": {
+      "dirty_ratio": 40,
+      "dirty_background_ratio": 10,
+      "dirty_writeback_centisecs": 3000,
+      "dirty_expire_centisecs": 6000,
+      "swappiness": 10,
+      "vfs_cache_pressure": 50
+    },
+
+    "hdd_specific": {
+      "write_cache": "enabled",
+      "ncq_depth": 32,
+      "max_hw_sectors_kb": 1024,
+      "read_ahead_kb": 2048,
+      "apm_level": 254,
+      "comment": "APM 254 = performance mode, disable power saving"
+    }
+  },
+
+  "workload_optimization": {
+    "sequential_heavy": {
+      "stripe_size_kb": 2048,
+      "chunk_size_kb": 512,
+      "read_ahead_kb": 4096,
+      "note": "Maximize sequential throughput"
+    },
+    "mixed_workload": {
+      "stripe_size_kb": 1024,
+      "chunk_size_kb": 256,
+      "read_ahead_kb": 1024,
+      "note": "Balance between sequential and random I/O"
+    },
+    "random_heavy": {
+      "note": "HDDs are poor for random I/O - consider SSD cache tier",
+      "recommendation": "Add SSD cache or upgrade to SSDs"
+    }
+  },
+
+  "expected_performance": {
+    "raid5": {
+      "encode_throughput_gbs": "1.0-1.4",
+      "decode_throughput_gbs": "0.8-1.2",
+      "rebuild_speed_gbs": "0.5-0.8",
+      "rebuild_time_8tb_hours": 12,
+      "bottleneck": "Rotational latency and seek time"
+    },
+    "raid6": {
+      "encode_throughput_gbs": "0.8-1.2",
+      "decode_throughput_gbs": "0.6-1.0",
+      "rebuild_speed_gbs": "0.4-0.7",
+      "rebuild_time_8tb_hours": 14,
+      "bottleneck": "Drive mechanics, not GPU"
+    }
+  },
+
+  "best_practices": [
+    "GPU RAID helps with parity calculations, but HDD mechanics are bottleneck",
+    "Use RAID 6 for reliability - HDDs have higher failure rates",
+    "Large stripe sizes (1MB+) minimize seeks",
+    "Enable write cache on drives",
+    "Disable power management (APM) for performance",
+    "Use 8+ drives to aggregate throughput",
+    "Align to track boundaries (often 4KB)",
+    "Monitor SMART: reallocated sectors, pending sectors, UDMA CRC errors",
+    "Plan for annual scrub/verification",
+    "Keep drives cool (below 45°C)",
+    "Consider tiered storage: SSD for hot data, HDD for cold"
+  ],
+
+  "limitations": {
+    "max_aggregate_throughput_gbs": 1.4,
+    "reason": "Limited by rotational latency (4.16ms) and seek time",
+    "iops_per_drive": 120,
+    "recommendation": "HDDs excel at sequential workloads - use for bulk storage, backups, archives",
+    "not_suitable_for": "Databases, VMs, random I/O workloads"
+  },
+
+  "reliability_considerations": {
+    "annual_failure_rate": "0.5-1.5%",
+    "mtbf_hours": 1000000,
+    "warranty_years": 3,
+    "unrecoverable_read_error_rate": "1 per 10^14 bits",
+    "recommendation": "Use RAID 6 for dual parity protection",
+    "scrub_interval_days": 30,
+    "backup_strategy": "Essential - RAID is not backup"
+  },
+
+  "compatibility": {
+    "example_drives": [
+      "WD Red Plus (NAS)",
+      "Seagate IronWolf",
+      "Toshiba N300",
+      "HGST Ultrastar (Enterprise)",
+      "WD Gold (Enterprise)"
+    ],
+    "sizes": ["4TB", "6TB", "8TB", "10TB", "12TB", "14TB", "16TB", "18TB"],
+    "tested_with": ["RTX 3080", "RTX 3060", "Quadro RTX 4000"],
+    "note": "SMR drives (Shingled Magnetic Recording) not recommended for RAID"
+  }
+}

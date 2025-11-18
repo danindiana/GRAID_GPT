@@ -1,0 +1,121 @@
+{
+  "profile_name": "NVMe PCIe 4.0 Optimal",
+  "drive_type": "nvme",
+  "interface": "pcie_4.0",
+  "description": "Optimized for high-end NVMe SSDs on PCIe 4.0 (Samsung 980 Pro, WD Black SN850, etc.)",
+
+  "drive_characteristics": {
+    "sequential_read_mbs": 7000,
+    "sequential_write_mbs": 5000,
+    "random_read_iops": 1000000,
+    "random_write_iops": 1000000,
+    "queue_depth": 256,
+    "block_size_kb": 4,
+    "interface_bandwidth_gbs": 8.0,
+    "latency_us": 10
+  },
+
+  "raid_configuration": {
+    "recommended_raid_level": 6,
+    "min_drives": 4,
+    "max_drives": 8,
+    "optimal_drives": 6,
+
+    "stripe_configuration": {
+      "stripe_size_kb": 256,
+      "chunk_size_kb": 64,
+      "alignment_kb": 4,
+      "reason": "Large stripes leverage NVMe parallel channels and high bandwidth"
+    },
+
+    "gpu_raid_settings": {
+      "memory_pool_size_mb": 4096,
+      "num_streams": 4,
+      "block_size_kb": 512,
+      "batch_size_mb": 256,
+      "enable_async": true,
+      "prefetch_size_mb": 128
+    }
+  },
+
+  "io_scheduler": {
+    "scheduler": "none",
+    "reason": "NVMe benefits from no scheduler (direct dispatch)",
+    "queue_depth": 256,
+    "nr_requests": 1024,
+    "read_ahead_kb": 256
+  },
+
+  "filesystem_recommendations": {
+    "xfs": {
+      "mount_options": "noatime,nodiratime,logbufs=8,logbsize=256k,largeio,swalloc",
+      "stripe_unit_kb": 64,
+      "stripe_width": 6
+    },
+    "ext4": {
+      "mount_options": "noatime,nodiratime,data=writeback,barrier=0,nobh",
+      "stride": 16,
+      "stripe_width": 96
+    },
+    "btrfs": {
+      "mount_options": "noatime,compress=zstd,space_cache=v2,ssd",
+      "raid_level": "single",
+      "note": "Use GPU RAID for redundancy, not btrfs RAID"
+    }
+  },
+
+  "performance_tuning": {
+    "vm_settings": {
+      "dirty_ratio": 40,
+      "dirty_background_ratio": 10,
+      "dirty_writeback_centisecs": 500,
+      "swappiness": 10
+    },
+
+    "nvme_specific": {
+      "write_cache": "enabled",
+      "poll_queues": 4,
+      "max_hw_sectors_kb": 1024,
+      "io_timeout_ms": 30000
+    }
+  },
+
+  "expected_performance": {
+    "raid5": {
+      "encode_throughput_gbs": "20-28",
+      "decode_throughput_gbs": "18-24",
+      "rebuild_speed_gbs": "10-15",
+      "rebuild_time_8tb_hours": 0.75
+    },
+    "raid6": {
+      "encode_throughput_gbs": "15-22",
+      "decode_throughput_gbs": "12-18",
+      "rebuild_speed_gbs": "8-12",
+      "rebuild_time_8tb_hours": 1.0
+    }
+  },
+
+  "best_practices": [
+    "Use drives from same manufacturer/model for consistency",
+    "Enable NVMe write cache for better performance",
+    "Disable NCQ/TCQ (not needed for NVMe)",
+    "Use 'none' I/O scheduler for lowest latency",
+    "Align partitions to 4KB boundaries",
+    "Use larger stripe sizes (256KB+) to leverage bandwidth",
+    "Enable GPU async operations for maximum throughput",
+    "Monitor drive temperature (keep below 70°C)",
+    "Leave 10-20% overprovisioning for wear leveling"
+  ],
+
+  "compatibility": {
+    "example_drives": [
+      "Samsung 980 Pro",
+      "WD Black SN850",
+      "Corsair MP600 Pro",
+      "SK Hynix Platinum P41",
+      "Seagate FireCuda 530"
+    ],
+    "min_firmware": "Check manufacturer for RAID compatibility",
+    "tested_with": ["RTX 3080", "RTX 3060", "Quadro RTX 4000"]
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "profile_name": "SATA SSD Optimized",
+  "drive_type": "ssd",
+  "interface": "sata3",
+  "description": "Optimized for SATA III SSDs (Samsung 870 EVO, Crucial MX500, WD Blue, etc.)",
+
+  "drive_characteristics": {
+    "sequential_read_mbs": 550,
+    "sequential_write_mbs": 520,
+    "random_read_iops": 98000,
+    "random_write_iops": 88000,
+    "queue_depth": 32,
+    "block_size_kb": 4,
+    "interface_bandwidth_gbs": 0.6,
+    "latency_us": 50
+  },
+
+  "raid_configuration": {
+    "recommended_raid_level": 5,
+    "min_drives": 3,
+    "max_drives": 8,
+    "optimal_drives": 6,
+
+    "stripe_configuration": {
+      "stripe_size_kb": 64,
+      "chunk_size_kb": 32,
+      "alignment_kb": 4,
+      "reason": "Smaller stripes better for SATA bandwidth limitations"
+    },
+
+    "gpu_raid_settings": {
+      "memory_pool_size_mb": 1024,
+      "num_streams": 2,
+      "block_size_kb": 128,
+      "batch_size_mb": 64,
+      "enable_async": true,
+      "prefetch_size_mb": 32
+    }
+  },
+
+  "io_scheduler": {
+    "scheduler": "mq-deadline",
+    "reason": "SATA benefits from scheduling for better IOPS",
+    "queue_depth": 32,
+    "nr_requests": 256,
+    "read_ahead_kb": 64,
+    "rotational": 0
+  },
+
+  "filesystem_recommendations": {
+    "xfs": {
+      "mount_options": "noatime,nodiratime,logbufs=8,logbsize=64k",
+      "stripe_unit_kb": 32,
+      "stripe_width": 6
+    },
+    "ext4": {
+      "mount_options": "noatime,nodiratime,data=ordered,discard",
+      "stride": 8,
+      "stripe_width": 48
+    }
+  },
+
+  "performance_tuning": {
+    "vm_settings": {
+      "dirty_ratio": 20,
+      "dirty_background_ratio": 5,
+      "dirty_writeback_centisecs": 1500,
+      "swappiness": 10
+    },
+
+    "sata_specific": {
+      "write_cache": "enabled",
+      "ncq_depth": 32,
+      "max_hw_sectors_kb": 512,
+      "enable_trim": true,
+      "discard_granularity_kb": 4
+    }
+  },
+
+  "expected_performance": {
+    "raid5": {
+      "encode_throughput_gbs": "2.5-3.2",
+      "decode_throughput_gbs": "2.0-2.8",
+      "rebuild_speed_gbs": "1.5-2.5",
+      "rebuild_time_8tb_hours": 4.5,
+      "bottleneck": "SATA bandwidth (600 MB/s per drive)"
+    },
+    "raid6": {
+      "encode_throughput_gbs": "2.0-2.8",
+      "decode_throughput_gbs": "1.8-2.4",
+      "rebuild_speed_gbs": "1.2-2.0",
+      "rebuild_time_8tb_hours": 5.5,
+      "bottleneck": "SATA bandwidth"
+    }
+  },
+
+  "best_practices": [
+    "SATA is bandwidth-limited - GPU helps but won't overcome 600MB/s per drive limit",
+    "Use more drives (6-8) to aggregate bandwidth",
+    "Enable TRIM/discard for longevity",
+    "Smaller stripe sizes (64KB) reduce latency",
+    "NCQ depth of 32 is optimal for SATA SSDs",
+    "Consider upgrading to NVMe for better performance",
+    "SATA works well for read-heavy workloads",
+    "Monitor wear leveling and health via SMART"
+  ],
+
+  "limitations": {
+    "max_aggregate_throughput_gbs": 3.2,
+    "reason": "Limited by SATA 6Gb/s interface",
+    "recommendation": "GPU RAID still provides fast parity/rebuild, but total throughput capped by SATA",
+    "best_use_case": "Cost-effective RAID for moderate performance needs"
+  },
+
+  "compatibility": {
+    "example_drives": [
+      "Samsung 870 EVO",
+      "Samsung 870 QVO",
+      "Crucial MX500",
+      "WD Blue 3D NAND",
+      "SanDisk Ultra 3D"
+    ],
+    "tested_with": ["RTX 3080", "RTX 3060", "Quadro RTX 4000"]
+  }
+}

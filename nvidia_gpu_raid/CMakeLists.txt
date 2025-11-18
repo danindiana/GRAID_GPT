@@ -120,12 +120,26 @@ if(ENABLE_TENSTORRENT)
     endif()
 endif()
 
-# Command-line tool
+# Command-line tools
 add_executable(gpu_raid_cli
     tools/gpu_raid_cli.cpp
 )
-
 target_link_libraries(gpu_raid_cli gpu_raid)
+
+# Drive detection and benchmarking tools
+add_executable(drive_detector
+    tools/drive_detector.cpp
+)
+target_link_libraries(drive_detector stdc++fs)
+
+add_executable(drive_benchmark
+    tools/drive_benchmark.cpp
+)
+target_link_libraries(drive_benchmark gpu_raid ${CUDA_LIBRARIES})
+
+add_executable(smart_monitor
+    tools/smart_monitor.cpp
+)
 
 # Example programs
 add_executable(simple_raid5_example
@@ -209,7 +223,7 @@ if(BUILD_BENCHMARKS)
 endif()
 
 # Installation
-install(TARGETS gpu_raid gpu_raid_cli
+install(TARGETS gpu_raid gpu_raid_cli drive_detector drive_benchmark smart_monitor
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
 )
@@ -223,6 +237,14 @@ install(FILES
     config/rtx3060_config.json
     config/quadro4000_config.json
     DESTINATION etc/gpu_raid
+)
+
+install(FILES
+    storage_profiles/nvme_pcie4_profile.json
+    storage_profiles/nvme_pcie3_profile.json
+    storage_profiles/sata_ssd_profile.json
+    storage_profiles/hdd_7200rpm_profile.json
+    DESTINATION etc/gpu_raid/storage_profiles
 )
 
 # Print configuration summary
