@@ -1,0 +1,110 @@
+{
+  "gpu_info": {
+    "model": "GeForce RTX 3080",
+    "architecture": "Ampere",
+    "compute_capability": "8.6",
+    "cuda_cores": 8704,
+    "sm_count": 68,
+    "tensor_cores": 272,
+    "memory_size_gb": 10,
+    "memory_type": "GDDR6X",
+    "memory_bandwidth_gbs": 760.3,
+    "memory_bus_width": 320,
+    "l2_cache_mb": 5,
+    "pcie_generation": 4,
+    "pcie_lanes": 16,
+    "tdp_watts": 320,
+    "base_clock_mhz": 1440,
+    "boost_clock_mhz": 1710
+  },
+  "raid_configuration": {
+    "raid_level": 5,
+    "stripe_size_kb": 256,
+    "chunk_size_kb": 64,
+    "num_data_drives": 6,
+    "num_parity_drives": 1,
+    "enable_write_cache": true,
+    "cache_size_mb": 512
+  },
+  "cuda_kernel_parameters": {
+    "xor_parity": {
+      "threads_per_block": 256,
+      "blocks_per_grid": 2048,
+      "shared_memory_bytes": 49152,
+      "registers_per_thread": 32,
+      "max_concurrent_kernels": 8
+    },
+    "reed_solomon": {
+      "threads_per_block": 256,
+      "blocks_per_grid": 1024,
+      "shared_memory_bytes": 49152,
+      "registers_per_thread": 48,
+      "max_concurrent_kernels": 4
+    },
+    "reconstruction": {
+      "threads_per_block": 512,
+      "blocks_per_grid": 1024,
+      "shared_memory_bytes": 32768,
+      "registers_per_thread": 64,
+      "max_concurrent_kernels": 2
+    }
+  },
+  "memory_management": {
+    "device_memory_pool_mb": 4096,
+    "pinned_host_memory_mb": 2048,
+    "enable_unified_memory": false,
+    "enable_managed_memory": false,
+    "async_memory_transfers": true,
+    "num_cuda_streams": 4,
+    "prefetch_size_mb": 128
+  },
+  "performance_tuning": {
+    "enable_concurrent_kernels": true,
+    "enable_hyper_q": true,
+    "enable_dynamic_parallelism": false,
+    "enable_peer_to_peer": true,
+    "kernel_timeout_ms": 5000,
+    "max_batch_size_mb": 256,
+    "io_queue_depth": 128,
+    "enable_nvlink": false
+  },
+  "power_thermal": {
+    "power_limit_watts": 320,
+    "target_temperature_c": 75,
+    "thermal_throttle_c": 83,
+    "fan_curve": "aggressive",
+    "enable_power_monitoring": true
+  },
+  "optimization_flags": {
+    "use_fast_math": true,
+    "ftz_mode": true,
+    "prec_div": false,
+    "prec_sqrt": false,
+    "fmad": true,
+    "compiler_optimization": "-O3",
+    "gpu_architecture": "sm_86"
+  },
+  "monitoring": {
+    "enable_profiling": true,
+    "enable_nvprof": false,
+    "enable_nsight": true,
+    "sample_rate_ms": 100,
+    "log_level": "INFO",
+    "metrics": [
+      "throughput_gbs",
+      "latency_us",
+      "kernel_time_ms",
+      "memory_bandwidth_utilization",
+      "sm_occupancy",
+      "power_watts",
+      "temperature_c"
+    ]
+  },
+  "experimental": {
+    "enable_tensor_cores_for_xor": false,
+    "use_cuda_graphs": true,
+    "enable_multi_gpu": false,
+    "gpu_direct_storage": false,
+    "rdma_support": false
+  }
+}
