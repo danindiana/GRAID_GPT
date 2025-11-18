@@ -127,6 +127,22 @@ add_executable(gpu_raid_cli
 
 target_link_libraries(gpu_raid_cli gpu_raid)
 
+# Example programs
+add_executable(simple_raid5_example
+    examples/simple_raid5_example.cu
+)
+target_link_libraries(simple_raid5_example gpu_raid ${CUDA_LIBRARIES})
+
+add_executable(raid6_dual_failure_example
+    examples/raid6_dual_failure_example.cu
+)
+target_link_libraries(raid6_dual_failure_example gpu_raid ${CUDA_LIBRARIES})
+
+add_executable(async_operations_example
+    examples/async_operations_example.cu
+)
+target_link_libraries(async_operations_example gpu_raid ${CUDA_LIBRARIES})
+
 # Tests
 if(BUILD_TESTS)
     enable_testing()
@@ -155,6 +171,18 @@ if(BUILD_TESTS)
     )
     target_link_libraries(test_reconstruction reconstruction_kernels gf_kernels ${CUDA_LIBRARIES})
     add_test(NAME test_reconstruction COMMAND test_reconstruction)
+
+    add_executable(test_basic_ops
+        tests/unit_tests/test_basic_ops.cu
+    )
+    target_link_libraries(test_basic_ops gpu_raid ${CUDA_LIBRARIES})
+    add_test(NAME test_basic_ops COMMAND test_basic_ops)
+
+    # Stress test
+    add_executable(stress_test
+        tests/stress/stress_test.cu
+    )
+    target_link_libraries(stress_test gpu_raid ${CUDA_LIBRARIES})
 endif()
 
 # Benchmarks
@@ -172,7 +200,12 @@ if(BUILD_BENCHMARKS)
     add_executable(bench_rebuild_speed
         tests/benchmarks/bench_rebuild_speed.cu
     )
-    target_link_libraries(bench_rebuild_speed reconstruction_kernels gf_kernels ${CUDA_LIBRARIES})
+    target_link_libraries(bench_rebuild_speed gpu_raid ${CUDA_LIBRARIES})
+
+    add_executable(bench_throughput
+        tests/benchmarks/bench_throughput.cu
+    )
+    target_link_libraries(bench_throughput gpu_raid ${CUDA_LIBRARIES})
 endif()
 
 # Installation
