@@ -1,0 +1,25 @@
+[Unit]
+Description=GPU RAID SMART Monitoring Daemon
+Documentation=man:gpu_raid_smart(8)
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/var/run/gpu_raid_smart.pid
+ExecStart=/usr/local/bin/gpu_raid_smart
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10s
+
+# Security settings
+PrivateTmp=yes
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/run /var/log
+
+# Nice level (lower priority to not interfere with I/O)
+Nice=10
+
+[Install]
+WantedBy=multi-user.target
