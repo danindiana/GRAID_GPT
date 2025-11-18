@@ -39,7 +39,7 @@ public:
     }
 
 private:
-    std::chrono::time_resolution_clock::time_point start_;
+    std::chrono::high_resolution_clock::time_point start_;
 };
 
 void PrintBandwidth(const std::string& operation, size_t bytes, double time_ms) {

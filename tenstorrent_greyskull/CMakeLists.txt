@@ -50,8 +50,11 @@ endif()
 # Include directories
 include_directories(
     ${PROJECT_SOURCE_DIR}/include
-    ${TT_METAL_INCLUDE_DIR}
 )
+
+if(HAVE_TT_METAL)
+    include_directories(${TT_METAL_INCLUDE_DIR})
+endif()
 
 # Source files
 set(GRAID_SOURCES
@@ -101,38 +104,26 @@ endif()
 # Examples
 option(BUILD_EXAMPLES "Build example programs" ON)
 
-if(BUILD_EXAMPLES)
-    message(STATUS "Building examples")
+if(BUILD_EXAMPLES AND HAVE_TT_METAL)
+    message(STATUS "Building examples (TT-Metal required)")
 
     # Example 1: Device Enumeration
     add_executable(01_device_enumeration
         examples/01_device_enumeration.cpp
     )
-    if(HAVE_TT_METAL)
-        target_link_libraries(01_device_enumeration PRIVATE tt_graid)
-    else()
-        target_link_libraries(01_device_enumeration PRIVATE tt_graid)
-    endif()
+    target_link_libraries(01_device_enumeration PRIVATE tt_graid)
 
     # Example 2: Memory Operations
     add_executable(02_memory_operations
         examples/02_memory_operations.cpp
     )
-    if(HAVE_TT_METAL)
-        target_link_libraries(02_memory_operations PRIVATE tt_graid)
-    else()
-        target_link_libraries(02_memory_operations PRIVATE tt_graid)
-    endif()
+    target_link_libraries(02_memory_operations PRIVATE tt_graid)
 
     # Example 3: Reed-Solomon RAID
     add_executable(03_reed_solomon_raid
         examples/03_reed_solomon_raid.cpp
     )
-    if(HAVE_TT_METAL)
-        target_link_libraries(03_reed_solomon_raid PRIVATE tt_graid)
-    else()
-        target_link_libraries(03_reed_solomon_raid PRIVATE tt_graid)
-    endif()
+    target_link_libraries(03_reed_solomon_raid PRIVATE tt_graid)
 
     # Install examples
     install(TARGETS
